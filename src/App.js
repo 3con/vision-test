@@ -7,12 +7,6 @@ import './App.css';
 aws.config.update(aws_config);
 
 class App extends Component {
-  constructor() {
-    super();
-
-    this.state = {};
-  }
-
   handleImageChange(e) {
     console.log("file changed");
     e.preventDefault();
@@ -23,18 +17,11 @@ class App extends Component {
     reader.readAsDataURL(file);
 
     reader.onloadend = () => {
-      this.setState({image: reader.result})
-      console.log(file, reader);
-    }
-  }
-
-  render() {
-    if (this.state.image) {
       let rekognition = new aws.Rekognition();
 
       var params = {
         Image: { /* required */
-          Bytes: this.state.image,
+          Bytes: reader.result,
         },
         MaxLabels: 0,
         MinConfidence: 0.0
@@ -44,8 +31,11 @@ class App extends Component {
         if (err) console.log(err, err.stack); // an error occurred
         else     console.log(data);           // successful response
       });
+      console.log(file, reader);
     }
+  }
 
+  render() {
     return (
       <div className="App">
         <div className="App-header">
