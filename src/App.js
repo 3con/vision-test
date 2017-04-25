@@ -57,11 +57,13 @@ class App extends Component {
       <div className="App">
         <div className="App-header">
           <h2>AWS Rekognition playground</h2>
-            <p>Upload an image to see what's in it:</p>
-            <form>
-              <input className="fileInput"
-                type="file"
-                onChange={(e)=>this.handleImageChange(e)} />
+            <p>Upload an image or take a photo (if you're on mobile) to see what's in it:</p>
+            <form className="form-group">
+              <label className="btn btn-primary btn-file btn-lg">
+                Add photo
+                <input type="file"  className="fileInput"
+                  style={{ display: 'none' }} onChange={(e)=>this.handleImageChange(e)} />
+              </label>
             </form>
         </div>
         <div>
