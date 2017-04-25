@@ -10,3 +10,8 @@ body {
 .App-header {
   padding: 5px;
 }
+
+.photo {
+  max-height: 300px;
+  max-width: 400px;
+}

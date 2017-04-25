@@ -28,7 +28,9 @@ class App extends Component {
     reader.onloadend = () => {
       let bucket = new aws.S3({params: {Bucket: aws_config.bucket}});
       let params = {Key: file.name, ContentType: file.type, Body: file};
-      bucket.upload(params, function (err, data) {
+      that.setState({photo: reader.result});
+
+      bucket.upload(params, (err, data) => {
         console.log(err, data);
         let rekognition = new aws.Rekognition();
 
@@ -53,6 +55,8 @@ class App extends Component {
   }
 
   render() {
+    let labels = this.state.labels?this.state.labels:[];
+
     return (
       <div className="App">
         <div className="App-header">
@@ -67,8 +71,11 @@ class App extends Component {
             </form>
         </div>
         <div>
-          <BootstrapTable ref='table' data={ this.state.labels }>
-            <TableHeaderColumn dataField='Name' isKey>Name</TableHeaderColumn>
+          <img className="photo" src={ this.state.photo } alt=""/>
+        </div>
+        <div>
+          <BootstrapTable ref='table' data={ labels }>
+            <TableHeaderColumn dataField='Name' isKey>Label Name</TableHeaderColumn>
             <TableHeaderColumn ref='Confidence' dataField='Confidence'>Confidence</TableHeaderColumn>
 
           </BootstrapTable>
