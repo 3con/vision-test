@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import {BootstrapTable, TableHeaderColumn} from 'react-bootstrap-table';
 import aws from 'aws-sdk';
 import aws_config from '../aws_config.json';
 
@@ -22,6 +23,8 @@ class App extends Component {
 
     reader.readAsDataURL(file);
 
+    let that = this;
+
     reader.onloadend = () => {
       let bucket = new aws.S3({params: {Bucket: aws_config.bucket}});
       let params = {Key: file.name, ContentType: file.type, Body: file};
@@ -38,12 +41,11 @@ class App extends Component {
           },
           MinConfidence: 0.0
         };
-
         rekognition.detectLabels(params, (err, data) => {
           if (err) console.log(err, err.stack); // an error occurred
           else {
             console.log(data);
-            // this.setState({labels: data})
+            that.setState({labels: data.Labels})
           }
         });
       });
@@ -51,8 +53,6 @@ class App extends Component {
   }
 
   render() {
-    let labels = this.state.labels;
-
     return (
       <div className="App">
         <div className="App-header">
@@ -65,9 +65,11 @@ class App extends Component {
             </form>
         </div>
         <div>
-          <pre>
-            {labels}
-          </pre>
+          <BootstrapTable ref='table' data={ this.state.labels }>
+            <TableHeaderColumn dataField='Name' isKey>Name</TableHeaderColumn>
+            <TableHeaderColumn ref='Confidence' dataField='Confidence'>Confidence</TableHeaderColumn>
+
+          </BootstrapTable>
         </div>
       </div>
     );
