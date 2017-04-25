@@ -8,9 +8,9 @@ import './App.css';
 aws.config.update(aws_config);
 
 class App extends Component {
-  constructor() {
-    super();
-
+  constructor(props) {
+    super(props);
+    this.confidenceFormatter = this.confidenceFormatter.bind(this);
     this.state = {}
   }
 
@@ -54,6 +54,12 @@ class App extends Component {
     }
   }
 
+  confidenceFormatter(cell, row) {
+    return (
+      Math.round(cell * 100) / 100 + '%'
+    );
+  }
+
   render() {
     let labels = this.state.labels?this.state.labels:[];
 
@@ -76,7 +82,7 @@ class App extends Component {
         <div>
           <BootstrapTable ref='table' data={ labels }>
             <TableHeaderColumn dataField='Name' isKey>Label Name</TableHeaderColumn>
-            <TableHeaderColumn ref='Confidence' dataField='Confidence'>Confidence</TableHeaderColumn>
+            <TableHeaderColumn ref='Confidence' dataField='Confidence' dataFormat={ this.confidenceFormatter }>Confidence</TableHeaderColumn>
 
           </BootstrapTable>
         </div>
