@@ -42,7 +42,8 @@ class App extends Component {
         rekognition.detectLabels(params, (err, data) => {
           if (err) console.log(err, err.stack); // an error occurred
           else {
-            this.setState({labels: data})
+            console.log(data);
+            // this.setState({labels: data})
           }
         });
       });
