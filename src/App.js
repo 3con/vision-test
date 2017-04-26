@@ -2,16 +2,35 @@ import React, { Component } from 'react';
 import {BootstrapTable, TableHeaderColumn} from 'react-bootstrap-table';
 import aws from 'aws-sdk';
 import aws_config from '../aws_config.json';
+import VisualRecognitionV3 from 'watson-developer-cloud/visual-recognition/v3';
+import watson_config from '../watson_config.json';
+
 
 import './App.css';
-
+console.log(VisualRecognitionV3)
 aws.config.update(aws_config);
 
 class App extends Component {
   constructor(props) {
     super(props);
     this.confidenceFormatter = this.confidenceFormatter.bind(this);
+    this.WatsonClassifyImage = this.WatsonClassifyImage.bind(this);
     this.state = {}
+  }
+
+  WatsonClassifyImage(image) {
+    let visual_recognition = new VisualRecognitionV3({
+      api_key: watson_config.api_key,
+      version_date: '2016-05-19'
+    });
+
+    visual_recognition.classify({images_file: image}, function(err, res) {
+      if (err)
+        console.log(err);
+      else
+        console.log(JSON.stringify(res, null, 2));
+    });
+    return true;
   }
 
   handleImageChange(e) {
@@ -32,24 +51,25 @@ class App extends Component {
 
       bucket.upload(params, (err, data) => {
         console.log(err, data);
-        let rekognition = new aws.Rekognition();
-
-        var params = {
-          Image: { /* required */
-            S3Object: {
-              Bucket: data.Bucket,
-              Name: data.Key
-            }
-          },
-          MinConfidence: 0.0
-        };
-        rekognition.detectLabels(params, (err, data) => {
-          if (err) console.log(err, err.stack); // an error occurred
-          else {
-            console.log(data);
-            that.setState({labels: data.Labels})
-          }
-        });
+        this.WatsonClassifyImage(data)
+        // let rekognition = new aws.Rekognition();
+        //
+        // var params = {
+        //   Image: { /* required */
+        //     S3Object: {
+        //       Bucket: data.Bucket,
+        //       Name: data.Key
+        //     }
+        //   },
+        //   MinConfidence: 0.0
+        // };
+        // rekognition.detectLabels(params, (err, data) => {
+        //   if (err) console.log(err, err.stack); // an error occurred
+        //   else {
+        //     console.log(data);
+        //     that.setState({labels: data.Labels})
+        //   }
+        // });
       });
     }
   }
