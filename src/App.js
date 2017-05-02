@@ -18,6 +18,23 @@ class App extends Component {
     console.log("file changed");
     e.preventDefault();
 
+    function getBinary(encodedFile) {
+      var base64Image = encodedFile.split("data:image/jpeg;base64,")[1];
+      var binaryImg = atob(base64Image);
+      var length = binaryImg.length;
+      var ab = new ArrayBuffer(length);
+      var ua = new Uint8Array(ab);
+      for (var i = 0; i < length; i++) {
+        ua[i] = binaryImg.charCodeAt(i);
+      }
+
+      var blob = new Blob([ab], {
+        type: "image/jpeg"
+      });
+
+      return ab;
+    }
+
     let file = e.target.files[0];
     let reader = new FileReader();
 
@@ -36,10 +53,7 @@ class App extends Component {
 
         var params = {
           Image: { /* required */
-            S3Object: {
-              Bucket: data.Bucket,
-              Name: data.Key
-            }
+            Bytes: getBinary(reader.result)
           },
           MinConfidence: 0.0
         };
